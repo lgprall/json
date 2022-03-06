@@ -1,12 +1,12 @@
 defmodule JsonAPI do
   def query(cat, id \\ 0, keys \\ []) do
     categories = %{
-      "posts"    => 100,
+      "posts" => 100,
       "comments" => 500,
-      "albums"   => 100,
-      "photos"   => 5000,
-      "todos"    => 200,
-      "users"    => 10
+      "albums" => 100,
+      "photos" => 5000,
+      "todos" => 200,
+      "users" => 10
     }
 
     cond do
@@ -21,14 +21,15 @@ defmodule JsonAPI do
     end
   end
 
-  def handle_response( response, keys \\ [])
+  def handle_response(response, keys \\ [])
 
   def handle_response({:ok, %{status_code: 200, body: body} = _response}, keys) do
     target =
       body
       |> Poison.Parser.parse!(%{})
+
     if length(keys) > 0 do
-      {:ok, target |> get_in(keys) }
+      {:ok, target |> get_in(keys)}
     else
       {:ok, target}
     end

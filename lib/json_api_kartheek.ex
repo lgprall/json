@@ -1,15 +1,16 @@
 defmodule JsonApi do
   def query(cat, id \\ 0, keys \\ []) do
     categories = %{
-      "posts"    => 100,
+      "posts" => 100,
       "comments" => 500,
-      "albums"   => 100,
-      "photos"   => 5000,
-      "todos"    => 200,
-      "users"    => 10
+      "albums" => 100,
+      "photos" => 5000,
+      "todos" => 200,
+      "users" => 10
     }
+
     base = "https://jsonplaceholder.typicode.com/"
-    
+
     cond do
       cat not in Map.keys(categories) ->
         {:error, ~s('#{cat}' is not a valid category.)}
@@ -20,12 +21,13 @@ defmodule JsonApi do
       is_list(keys) and length(keys) > 0 ->
         url = [base, cat, "/", to_string(id)]
         response = get_data(url)
+
         case response do
           {:ok, target} ->
             {:ok, get_in(target, keys)}
 
           _ ->
-            response 
+            response
         end
 
       id > 0 ->
@@ -61,4 +63,3 @@ defmodule JsonApi do
     |> handle_response()
   end
 end
-
