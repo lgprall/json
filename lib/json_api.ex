@@ -11,20 +11,19 @@ defmodule JsonAPI do
       "users"    => 10
     }
 
-    if cat not in Map.keys(categories) do
-       {:error, ~s('#{cat}' is not a valid category.) }
-     else
-       if id > categories[cat] do
-         {:error, ~s(The maximum id for '#{cat}' is #{categories[cat]}.) }
-       else
-         base = "https://jsonplaceholder.typicode.com/"
-         [base, cat, "/", to_string(id)]
-               |> :erlang.iolist_to_binary
-               |> HTTPoison.get
-               |> handle_response(keys)
-       end
-     end
-   end
+    cond do
+      cat not in Map.keys(categories) ->
+        {:error, ~s('#{cat}' is not a valid category.)}
+      id > categories[cat] ->
+        {:error, ~s(The maximum id for '#{cat}' is #{categories[cat]}.) }
+      true ->
+        base = "https://jsonplaceholder.typicode.com/"
+        [base, cat, "/", to_string(id)]
+        |> :erlang.iolist_to_binary
+        |> HTTPoison.get
+        |> handle_response(keys)
+    end
+  end
 
    def query(cat,id) do
 
@@ -37,19 +36,18 @@ defmodule JsonAPI do
        "users"    => 10
      }
 
-     if cat not in Map.keys(categories) do
-       {:error, ~s('#{cat}' is not a valid category.) }
-     else
-       if id > categories[cat] do
-         {:error, ~s(The maximum id for '#{cat}' is #{categories[cat]}.) }
-       else
-         base = "https://jsonplaceholder.typicode.com/"
-         [base, cat, "/", to_string(id)]
-               |> :erlang.iolist_to_binary
-               |> HTTPoison.get
-               |> handle_response
-       end
-     end
+    cond do
+      cat not in Map.keys(categories) ->
+        {:error, ~s('#{cat}' is not a valid category.)}
+      id > categories[cat] ->
+        {:error, ~s(The maximum id for '#{cat}' is #{categories[cat]}.) }
+      true ->
+        base = "https://jsonplaceholder.typicode.com/"
+        [base, cat, "/", to_string(id)]
+        |> :erlang.iolist_to_binary
+        |> HTTPoison.get
+        |> handle_response
+    end
    end
 
    def query(cat) do
@@ -63,15 +61,16 @@ defmodule JsonAPI do
        "users"    => 10
      }
 
-     if cat not in Map.keys(categories) do
-       {:error, ~s('#{cat}' is not a valid category.) }
-     else
-         base = "https://jsonplaceholder.typicode.com/"
-         [base, cat]
-               |> :erlang.iolist_to_binary
-               |> HTTPoison.get
-               |> handle_response
-     end
+    cond do
+      cat not in Map.keys(categories) ->
+        {:error, ~s('#{cat}' is not a valid category.)}
+      true ->
+        base = "https://jsonplaceholder.typicode.com/"
+        [base, cat]
+        |> :erlang.iolist_to_binary
+        |> HTTPoison.get
+        |> handle_response
+    end
    end
 
    def handle_response( {:ok, %{status_code: 200, body: body} = _response}, keys ) do
