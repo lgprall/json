@@ -21,13 +21,17 @@ defmodule JsonAPI do
     end
   end
 
+  def handle_response( response, keys \\ [])
+
   def handle_response({:ok, %{status_code: 200, body: body} = _response}, keys) do
     target =
       body
       |> Poison.Parser.parse!(%{})
-      |> get_in(keys)
-
-    {:ok, target}
+    if length(keys) > 0 do
+      {:ok, target |> get_in(keys) }
+    else
+      {:ok, target}
+    end
   end
 
   def handle_response({:ok, %{status_code: status, body: body} = _response}, _keys) do
@@ -40,27 +44,6 @@ defmodule JsonAPI do
   end
 
   def handle_response({:error, reason}, _) do
-    {:error, reason}
-  end
-
-  def handle_response({:ok, %{status_code: 200, body: body} = _response}) do
-    target =
-      body
-      |> Poison.Parser.parse!(%{})
-
-    {:ok, target}
-  end
-
-  def handle_response({:ok, %{status_code: status, body: body} = _response}) do
-    message =
-      body
-      |> Poison.Parser.parse!(%{})
-      |> get_in(["message"])
-
-    {:error, status, message}
-  end
-
-  def handle_response({:error, reason}) do
     {:error, reason}
   end
 
