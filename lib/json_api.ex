@@ -1,4 +1,5 @@
 defmodule JsonAPI do
+
   def query(cat, id \\ 0, keys \\ []) do
     categories = %{
       "posts" => 100,
@@ -9,6 +10,8 @@ defmodule JsonAPI do
       "users" => 10
     }
 
+    base = "https://jsonplaceholder.typicode.com/"
+
     cond do
       cat not in Map.keys(categories) ->
         {:error, ~s('#{cat}' is not a valid category.)}
@@ -16,26 +19,29 @@ defmodule JsonAPI do
       id > categories[cat] ->
         {:error, ~s(The maximum id for '#{cat}' is #{categories[cat]}.)}
 
+      is_list(keys) and length(keys) > 0 and id > 0 ->
+        response = get_data([base, cat, "/", to_string(id)])
+
+        case response do
+          {:ok, answer} ->
+            {:ok, get_in(answer, keys)}
+          _ ->
+            response
+        end
+
+      id > 0 ->
+        get_data([base, cat, "/", to_string(id)])
+
       true ->
-        get_url(cat, id, keys)
+        get_data([base, cat])
     end
   end
 
-  def handle_response(response, keys \\ [])
-
-  def handle_response({:ok, %{status_code: 200, body: body} = _response}, keys) do
-    target =
-      body
-      |> Poison.Parser.parse!(%{})
-
-    if length(keys) > 0 do
-      {:ok, target |> get_in(keys)}
-    else
-      {:ok, target}
-    end
+  def handle_response({:ok, %{status_code: 200, body: body} = _response}) do
+    {:ok, body |> Poison.Parser.parse!(%{})}
   end
 
-  def handle_response({:ok, %{status_code: status, body: body} = _response}, _keys) do
+  def handle_response({:ok, %{status_code: status, body: body} = _response}) do
     message =
       body
       |> Poison.Parser.parse!(%{})
@@ -44,31 +50,14 @@ defmodule JsonAPI do
     {:error, status, message}
   end
 
-  def handle_response({:error, reason}, _) do
+  def handle_response({:error, reason}) do
     {:error, reason}
   end
 
-  defp get_url(cat, id, keys) do
-    base = "https://jsonplaceholder.typicode.com/"
-
-    cond do
-      is_list(keys) and length(keys) > 0 ->
-        [base, cat, "/", to_string(id)]
-        |> :erlang.iolist_to_binary()
-        |> HTTPoison.get()
-        |> handle_response(keys)
-
-      id > 0 ->
-        [base, cat, "/", to_string(id)]
-        |> :erlang.iolist_to_binary()
-        |> HTTPoison.get()
-        |> handle_response
-
-      true ->
-        [base, cat]
-        |> :erlang.iolist_to_binary()
-        |> HTTPoison.get()
-        |> handle_response
-    end
+  defp get_data(url) do
+    url
+    |> :erlang.iolist_to_binary()
+    |> HTTPoison.get()
+    |> handle_response
   end
 end
