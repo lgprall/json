@@ -11,7 +11,7 @@ defmodule JsonTest do
   test "rejects out of bounds id" do
     response = JsonAPI.query("posts",101)
 
-    assert response == "'posts' max id: 100"
+    assert response == "posts max id: 100"
   end
 
   test "reports correct data for cat/id" do

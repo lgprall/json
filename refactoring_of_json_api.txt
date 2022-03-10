@@ -1,0 +1,27 @@
+larry@habu lib % ll json*
+-rw-r–r–@ 1 larry staff 2787 Mar 5 17:57 json_api.ex
+-rw-r–r–@ 1 larry staff 2003 Mar 5 17:57 json_api.new.ex
+larry@habu lib % wc json*
+     112     301    2787 json_api.ex
+      90     213    2003 json_api.new.ex
+     202     514    4790 total
+larry@habu lib %
+
+larry@habu lib % ll
+total 16
+-rw-r--r--@ 1 larry  staff  2003 Mar  5 18:51 json_api.ex
+-rw-r--r--@ 1 larry  staff  1669 Mar  5 18:45 new_json_api.ex
+larry@habu lib % wc *
+      90     213    2003 json_api.ex
+      73     185    1669 new_json_api.ex
+     163     398    3672 total
+larry@habu lib %
+larry@habu lib % ll
+total 16
+-rw-r--r--@ 1 larry  staff  2873 Mar  5 19:19 json_api.ex
+-rw-r--r--@ 1 larry  staff  1669 Mar  5 19:08 json_api.fin.ex
+larry@habu lib % wc json*
+     113     304    2873 json_api.ex
+      73     185    1669 json_api.fin.ex
+     186     489    4542 total
+larry@lil-habu lib % 
