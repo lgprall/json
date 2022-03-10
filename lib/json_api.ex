@@ -1,6 +1,7 @@
 defmodule JsonAPI do
 
-  def query(cat, id \\ 0, keys \\ []) do
+  def query(cat, id \\ 0, keys \\ [] ) do
+
     categories = %{
       "posts" => 100,
       "comments" => 500,
@@ -17,16 +18,15 @@ defmodule JsonAPI do
         {:error, ~s('#{cat}' is not a valid category.)}
 
       id > categories[cat] ->
-        {:error, ~s(The maximum id for '#{cat}' is #{categories[cat]}.)}
+        {:error, ~s(The maximum value of '#{cat}' is #{categories[cat]}.)}
 
       is_list(keys) and length(keys) > 0 and id > 0 ->
-        response = get_data([base, cat, "/", to_string(id)])
+        resp = get_data([base, cat, "/", to_string(id)])
+        case resp do
+        {:ok, body } ->
+          {:ok, get_in(body, keys)}
 
-        case response do
-          {:ok, answer} ->
-            {:ok, get_in(answer, keys)}
-          _ ->
-            response
+          _ -> resp
         end
 
       id > 0 ->
@@ -37,27 +37,26 @@ defmodule JsonAPI do
     end
   end
 
-  def handle_response({:ok, %{status_code: 200, body: body} = _response}) do
-    {:ok, body |> Poison.Parser.parse!(%{})}
-  end
-
-  def handle_response({:ok, %{status_code: status, body: body} = _response}) do
-    message =
-      body
-      |> Poison.Parser.parse!(%{})
-      |> get_in(["message"])
-
-    {:error, status, message}
-  end
-
-  def handle_response({:error, reason}) do
-    {:error, reason}
-  end
-
   defp get_data(url) do
     url
-    |> :erlang.iolist_to_binary()
-    |> HTTPoison.get()
+    |> :erlang.iolist_to_binary
+    |> HTTPoison.get
     |> handle_response
+  end
+
+  defp handle_response( {:ok, %{ status_code: 200, body: body } = _response} ) do
+    data = body
+           |> Poison.Parser.parse!(%{})
+    {:ok, data}
+  end
+
+  defp handle_response( {:ok, %{ status_code: code, body: body } = _response} ) do
+    message = body
+              |> Poison.Parser.parse!(%{})
+    {:error, code, message}
+  end
+
+  defp handle_response( response ) do
+    response
   end
 end
