@@ -25,4 +25,4 @@ defmodule JsonAPI do
 
   defp parse(body),                        do: Poison.Parser.parse!(body, %{})
 
-  end
+end

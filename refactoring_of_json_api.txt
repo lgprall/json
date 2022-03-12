@@ -25,3 +25,9 @@ larry@habu lib % wc json*
       73     185    1669 json_api.fin.ex
      186     489    4542 total
 larry@lil-habu lib % 
+larry@habu json % wc json_*
+      62     170    1366 json_api.ex
+      28     140    1335 json_api_droll.ex
+      65     161    1439 json_api_kartheek.ex
+     155     471    4140 total
+larry@habu json % 
